@@ -1,0 +1,30 @@
+mode: standalone
+replicas: 1
+
+image:
+  repository: pgsty/silo
+  tag: RELEASE.2026-11-12T00-00-00Z
+
+existingSecret: silo-root
+
+persistence:
+  enabled: true
+  storageClass: local-path
+  accessMode: ReadWriteOnce
+  size: 20Gi
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: "1"
+    memory: 2Gi
+
+service:
+  type: ClusterIP
+  port: "9000"
+
+consoleService:
+  type: ClusterIP
+  port: "9001"

@@ -1,0 +1,92 @@
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Datasets and local caches
+data/
+datasets/
+.cache/
+**/cifar-10-batches-py/
+**/cifar10/
+**/cifar-10-python.tar.gz
+
+# Training results and artifacts
+results/
+saved_results/
+failed_run_results/
+data/results/
+mlruns/
+mlartifacts/
+lightning_logs/
+wandb/
+checkpoints/
+*.jsonl
+*.csv
+*.parquet
+*.npy
+*.npz
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.safetensors
+
+# Archives and binary dumps
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.7z
+*.rar
+*.bin
+*.dump
+*.db
+*.sqlite
+*.sqlite3
+
+# Local experiments and obsolete files
+*.ipynb
+.ipynb_checkpoints/
+README_REFACTOR.md
+gc_s3_kit/
+gc_k3s_gpu_kit/
+gpu_usage.csv
+
+# Credentials and local Kubernetes configuration
+secrets/
+*.secret.yaml
+*.secrets.yaml
+*-secret.yaml
+*-secrets.yaml
+*credentials*.yaml
+kubeconfig
+kubeconfig.*
+*.pem
+*.key
+*.p12
+
+# IDE and operating system
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo
+
+# Build and temporary files
+build/
+dist/
+tmp/
+temp/
+*.log

@@ -1,0 +1,27 @@
+apiVersion: ray.io/v1
+kind: RayJob
+metadata:
+  name: gc-lab-v1-straggler
+spec:
+  clusterSelector:
+    gc-lab-v1: "true"
+
+  submissionMode: HTTPMode
+  entrypoint: python /app/train_ray.py
+
+  runtimeEnvYAML: |
+    env_vars:
+      NUM_WORKERS: "3"
+      GC_STRAGGLERS: "1"
+      GC_SEED: "1234"
+      SEED: "1234"
+      TRAIN_LIMIT: "3000"
+      BATCH_SIZE: "125"
+      EPOCHS: "1"
+      TEST_LIMIT: "1000"
+      LR: "0.1"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      AGGREGATOR_THREADS: "1"
+      SLOW_WORKER: "2"
+      STRAGGLER_DELAY: "20"

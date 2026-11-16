@@ -1,0 +1,46 @@
+
+apiVersion: ray.io/v1
+kind: RayJob
+metadata:
+  name: gc-lab-v1-run
+spec:
+  clusterSelector:
+    ray.io/cluster: gc-lab-v1
+  submissionMode: HTTPMode
+  entrypoint: python /app/train_ray.py
+  runtimeEnvYAML: |
+    env_vars:
+      GC_SCHEME: "pgc_fr"
+      NUM_WORKERS: "6"
+      NUM_PARTITIONS: "6"
+      GC_STRAGGLERS: "2"
+      CCE_M: "2"
+
+      GC_GPU_FRACTION: "1"
+      GC_PROFILE_STEPS: "1"
+      GC_STEP_TIMEOUT_S: "180"
+      GC_EVAL_TIMEOUT_S: "600"
+      GC_EVAL_BATCH: "64"
+      GC_TRAIN_EVAL_INTERVAL: "5"
+
+      GC_SEED: "1234"
+      SEED: "1234"
+
+      TRAIN_LIMIT: "24000"
+      TEST_LIMIT: "10000"
+      BATCH_SIZE: "40"
+      EPOCHS: "60"
+
+      LR: "0.05"
+      MOMENTUM: "0.9"
+      WEIGHT_DECAY: "0.0005"
+      EMA_DECAY: "0.99"
+
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      AGGREGATOR_THREADS: "1"
+
+      SLOW_WORKER: "-1"
+      STRAGGLER_DELAY: "0"
+
+      MLFLOW_TRACKING_URI: "http://mlflow.default.svc.cluster.local:5000"
