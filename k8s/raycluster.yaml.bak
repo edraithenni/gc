@@ -1,0 +1,161 @@
+apiVersion: ray.io/v1
+kind: RayCluster
+
+metadata:
+  name: gc-lab-v1
+  labels:
+    gc-lab-v1: "true"
+
+spec:
+  rayVersion: "2.58.0"
+  enableInTreeAutoscaling: false
+
+  headGroupSpec:
+    rayStartParams:
+      num-cpus: "2"
+      num-gpus: "0"
+      object-store-memory: "536870912"
+      resources: '"{\"gc_parameter_server\": 1}"'
+
+    template:
+      spec:
+        securityContext:
+          fsGroup: 1000
+
+        initContainers:
+          - name: fetch-dataset
+            image: gc-lab-v1:cuda
+            imagePullPolicy: Never
+            command:
+              - python
+              - /app/s3_dataset.py
+            envFrom:
+              - configMapRef:
+                  name: gc-s3-config
+              - secretRef:
+                  name: gc-s3-reader
+            volumeMounts:
+              - name: dataset-cache
+                mountPath: /data/cifar10
+
+        containers:
+          - name: ray-head
+            image: gc-lab-v1:cuda
+            imagePullPolicy: Never
+
+            resources:
+              requests:
+                cpu: "2"
+                memory: 10Gi
+              limits:
+                cpu: "3"
+                memory: 10Gi
+
+            env:
+              - name: GC_DEVICE
+                value: cpu
+              - name: AGGREGATOR_THREADS
+                value: "1"
+              - name: DATA_ROOT
+                value: /data/cifar10
+              - name: RESULTS_DIR
+                value: /data/results
+
+            volumeMounts:
+              - name: dataset-cache
+                mountPath: /data/cifar10
+              - name: results
+                mountPath: /data/results
+              - name: dshm
+                mountPath: /dev/shm
+
+        volumes:
+          - name: dataset-cache
+            emptyDir:
+              sizeLimit: 1Gi
+          - name: results
+            emptyDir:
+              sizeLimit: 2Gi
+          - name: dshm
+            emptyDir:
+              medium: Memory
+              sizeLimit: 1Gi
+
+  workerGroupSpecs:
+    - groupName: gpu
+      replicas: 6
+      minReplicas: 6
+      maxReplicas: 6
+
+      rayStartParams:
+        num-cpus: "1"
+        num-gpus: "1"
+        object-store-memory: "268435456"
+        resources: '"{\"gc_worker\": 1}"'
+
+      template:
+        spec:
+          runtimeClassName: nvidia
+
+          securityContext:
+            fsGroup: 1000
+
+          initContainers:
+            - name: fetch-dataset
+              image: gc-lab-v1:cuda
+              imagePullPolicy: Never
+
+              command:
+                - python
+                - /app/s3_dataset.py
+
+              envFrom:
+                - configMapRef:
+                    name: gc-s3-config
+                - secretRef:
+                    name: gc-s3-reader
+
+              volumeMounts:
+                - name: dataset-cache
+                  mountPath: /data/cifar10
+
+          containers:
+            - name: ray-worker
+              image: gc-lab-v1:cuda
+              imagePullPolicy: Never
+
+              resources:
+                requests:
+                  cpu: "1"
+                  memory: 2Gi
+                  nvidia.com/gpu: "1"
+                limits:
+                  cpu: "2"
+                  memory: 4Gi
+                  nvidia.com/gpu: "1"
+
+              env:
+                - name: GC_DEVICE
+                  value: cuda
+                - name: OMP_NUM_THREADS
+                  value: "1"
+                - name: MKL_NUM_THREADS
+                  value: "1"
+                - name: DATA_ROOT
+                  value: /data/cifar10
+
+              volumeMounts:
+                - name: dataset-cache
+                  mountPath: /data/cifar10
+                - name: dshm
+                  mountPath: /dev/shm
+
+          volumes:
+            - name: dataset-cache
+              emptyDir:
+                sizeLimit: 1Gi
+
+            - name: dshm
+              emptyDir:
+                medium: Memory
+                sizeLimit: 512Mi

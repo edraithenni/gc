@@ -14,7 +14,7 @@ spec:
     rayStartParams:
       num-cpus: "2"
       num-gpus: "0"
-      object-store-memory: "536870912"
+      object-store-memory: "2147483648"
       resources: '"{\"gc_parameter_server\": 1}"'
 
     template:
@@ -79,7 +79,7 @@ spec:
           - name: dshm
             emptyDir:
               medium: Memory
-              sizeLimit: 1Gi
+              sizeLimit: 3Gi
 
   workerGroupSpecs:
     - groupName: gpu
@@ -90,7 +90,7 @@ spec:
       rayStartParams:
         num-cpus: "1"
         num-gpus: "1"
-        object-store-memory: "268435456"
+        object-store-memory: "536870912"
         resources: '"{\"gc_worker\": 1}"'
 
       template:
@@ -158,4 +158,4 @@ spec:
             - name: dshm
               emptyDir:
                 medium: Memory
-                sizeLimit: 512Mi
+                sizeLimit: 1Gi
