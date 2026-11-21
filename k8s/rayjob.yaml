@@ -2,7 +2,7 @@
 apiVersion: ray.io/v1
 kind: RayJob
 metadata:
-  name: gc-100e-pgc-fr-s1
+  name: gc-100e-cce-gc-fr-s1-optim
 spec:
   clusterSelector:
     ray.io/cluster: gc-lab-v1
@@ -10,7 +10,7 @@ spec:
   entrypoint: python /app/train_ray.py
   runtimeEnvYAML: |
     env_vars:
-      GC_SCHEME: "pgc_fr"
+      GC_SCHEME: "cce_gc_fr"
       NUM_WORKERS: "6"
       NUM_PARTITIONS: "6"
       GC_STRAGGLERS: "1"
